@@ -71,7 +71,7 @@ class PostColumn extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Icon(Icons.account_circle,
-                            size: 45, color: Colors.white),
+                            size: 50, color: Colors.white),
                         const SizedBox(width: 10),
                         Flexible(
                           child: Column(
@@ -80,31 +80,32 @@ class PostColumn extends StatelessWidget {
                               Text(
                                 post.title,
                                 style: const TextStyle(
-                                    fontSize: 20,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
                               ),
-                              Text(
-                                  post.to_char
-                                      .replaceAll(RegExp(r'\s+'), ' ')
-                                      .replaceAll(',', ''),
-                                  style: const TextStyle(
-                                      fontSize: 16, color: Colors.white)),
                               const SizedBox(height: 2),
                               Text(post.content,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                      fontSize: 16, color: Colors.white)),
+                                      fontSize: 14, color: Colors.white)),
                               const SizedBox(height: 2),
                               Row(
                                 children: [
                                   const Icon(Icons.remove_red_eye,
-                                      color: Colors.white),
+                                      color: Colors.white, size: 23),
                                   const SizedBox(width: 5),
                                   Text(post.views.toString(),
                                       style: const TextStyle(
-                                          fontSize: 16, color: Colors.white)),
+                                          fontSize: 14, color: Colors.white)),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                      post.to_char
+                                          .replaceAll(RegExp(r'\s+'), ' ')
+                                          .replaceAll(',', ''),
+                                      style: const TextStyle(
+                                          fontSize: 14, color: Colors.white)),
                                 ],
                               ),
                               // Optionally, add a button or icon if you want to perform some action (e.g., view comments)

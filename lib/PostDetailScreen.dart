@@ -110,13 +110,13 @@ class _PostDetailState extends State<PostDetail> {
                           children: [
                             Text('User${post.post_id.split('-').first}',
                                 style: const TextStyle(
-                                    fontSize: 16, color: Colors.white)),
+                                    fontSize: 14, color: Colors.white)),
                             Text(
                               post.to_char
                                   .replaceAll(RegExp(r'\s+'), ' ')
                                   .replaceAll(',', ''),
                               style: const TextStyle(
-                                  fontSize: 16, color: Colors.white),
+                                  fontSize: 14, color: Colors.white),
                             ),
                           ],
                         ),

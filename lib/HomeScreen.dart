@@ -115,8 +115,8 @@ class _HomeState extends State<Home> {
       bottomNavigationBar:
       NavigationBarTheme(
         data: NavigationBarThemeData(
+          height: 60,
           labelTextStyle: MaterialStateProperty.all(const TextStyle(color: Colors.white)),
-
         ),
         child: NavigationBar(
           labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
@@ -131,6 +131,9 @@ class _HomeState extends State<Home> {
                   curve: Curves.easeIn);
             }
             else if(index == 1){
+              setState(() {
+                navigationBarIndex = 0;
+              });
               showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(
@@ -142,7 +145,7 @@ class _HomeState extends State<Home> {
                     return Container(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.all(32),
+                      padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -152,9 +155,6 @@ class _HomeState extends State<Home> {
                               IconButton(
                                   onPressed: () {
                                     Navigator.pop(context);
-                                    setState(() {
-                                      navigationBarIndex = 0;
-                                    });
                                   },
                                   icon: const Icon(
                                     Icons.close,
@@ -270,83 +270,24 @@ class _HomeState extends State<Home> {
           backgroundColor: Colors.black,
           destinations: const [
           NavigationDestination(
-            icon: Icon(Icons.home, color: Colors.white),
-            selectedIcon: Icon(Icons.home_outlined),
+            icon: Icon(Icons.home, color: Colors.white, size: 30),
+            selectedIcon: Icon(Icons.home_outlined, size: 30),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.add_circle, color: Colors.white),
-            selectedIcon: Icon(Icons.add_circle_outline),
+            icon: Icon(Icons.add_circle, color: Colors.white, size: 30),
+            selectedIcon: Icon(Icons.add_circle_outline, size: 30),
             label: 'Profile',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings, color: Colors.white),
-            selectedIcon: Icon(Icons.settings_outlined),
+            icon: Icon(Icons.settings, color: Colors.white, size: 30),
+            selectedIcon: Icon(Icons.settings_outlined, size: 30),
             label: 'Notifications',
           ),
         ],
         ),
       ),
-      drawer: Drawer(
-        backgroundColor: Colors.black,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            Container(
-              height: 100, // Adjust the height as needed
-              color: Colors.black,
-              child: const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 24)),
-                ),
-              ),
-            ),
-            const Divider(),
-            ListTile(
-              title: const Text('Contact Us', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Contact()));
-              },
-            ),
-            ListTile(
-              title: const Text('Guidelines', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Guidelines()));
-              },
-            ),
-            ListTile(
-              title: const Text('Term of Use', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const Terms()));
-              },
-            ),
-            ListTile(
-              title: const Text('Privacy Policy', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const PrivacyPolicy()));
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: const SettingsDrawer(),
       appBar: AppBar(
         leading: Container(),
         backgroundColor: Colors.black,
@@ -410,6 +351,76 @@ class _HomeState extends State<Home> {
                     return const Center(child: Text('No data')); // Empty state
                   }
                 }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsDrawer extends StatelessWidget {
+  const SettingsDrawer({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: Colors.black,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          Container(
+            height: 100, // Adjust the height as needed
+            color: Colors.black,
+            child: const Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text('Settings', style: TextStyle(color: Colors.white, fontSize: 24)),
+              ),
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            title: const Text('Contact Us', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Contact()));
+            },
+          ),
+          ListTile(
+            title: const Text('Guidelines', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Guidelines()));
+            },
+          ),
+          ListTile(
+            title: const Text('Term of Use', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Terms()));
+            },
+          ),
+          ListTile(
+            title: const Text('Privacy Policy', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const PrivacyPolicy()));
+            },
           ),
         ],
       ),

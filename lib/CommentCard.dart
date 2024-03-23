@@ -68,11 +68,11 @@ class CommentCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Comment${comment.comment_id.split('-').first}', style: const TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white
                                   )),
                                   Text(comment.to_char.replaceAll(RegExp(r'\s+'), ' ').replaceAll(',', ''), style: const TextStyle(
-                                      fontSize: 16,
+                                      fontSize: 14,
                                       color: Colors.white
 
                                   )),
