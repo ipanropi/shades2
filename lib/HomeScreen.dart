@@ -86,6 +86,8 @@ class _HomeState extends State<Home> {
   final contentController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final ScrollController _scrollController = ScrollController();
+  int navigationBarIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void dispose() {
@@ -108,7 +110,183 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: Colors.black,
+      bottomNavigationBar:
+      NavigationBarTheme(
+        data: NavigationBarThemeData(
+          labelTextStyle: MaterialStateProperty.all(const TextStyle(color: Colors.white)),
+
+        ),
+        child: NavigationBar(
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+          onDestinationSelected: (int index) {
+            setState(() {
+              navigationBarIndex = index;
+            });
+
+            if(index == 0){
+              _scrollController.animateTo(0,
+                  duration: const Duration(seconds: 1),
+                  curve: Curves.easeIn);
+            }
+            else if(index == 1){
+              showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  backgroundColor: Colors.black,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    setState(() {
+                                      navigationBarIndex = 0;
+                                    });
+                                  },
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 30,
+                                  )),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    // First, check if the form is valid
+                                    if (_formKey.currentState?.validate() ??
+                                        false) {
+                                      // If the form is valid, proceed to attempt post creation
+                                      try {
+                                        createPost(titleController.text,
+                                            contentController.text)
+                                            .then((_) {
+                                          // Assuming createPost function is correct and post is created successfully
+                                          if (mounted) {
+                                            Navigator.pop(
+                                                context); // Close the modal
+                                          }
+                                          setState(() {
+                                            titleController
+                                                .clear(); // Clear the text fields
+                                            contentController.clear();
+                                            post =
+                                                fetchPosts();
+                                            navigationBarIndex = 0;// Refresh the list of posts
+                                          });
+                                        }).catchError((error) {
+                                          // Handle any errors that occur during post creation
+                                          print('Error creating post: $error');
+                                        });
+                                      } catch (error) {
+                                        // Handle any errors here
+                                        print('Error: $error');
+                                      }
+                                    } else {
+                                      // If the form is not valid, show an error dialog or handle it accordingly
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Error'),
+                                              content: const Text(
+                                                  'Please enter a title and content'),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Close'),
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    }
+                                  },
+                                  child: const Text("Post",
+                                      style: TextStyle(color: Colors.black))),
+                            ],
+                          ),
+                          Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  TextFormField(
+                                    controller: titleController,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter some text';
+                                      }
+                                      return null;
+                                    },
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: const InputDecoration(
+                                        hintText: 'Title',
+                                        hintStyle:
+                                        TextStyle(color: Colors.white)),
+                                  ),
+                                  TextFormField(
+                                    controller: contentController,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter some text';
+                                      }
+                                      return null;
+                                    },
+                                    style: const TextStyle(color: Colors.white),
+                                    maxLines: 20,
+                                    decoration: const InputDecoration(
+                                        hintText:
+                                        'What\'s on your mind?...',
+                                        hintStyle:
+                                        TextStyle(color: Colors.white)),
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                    );
+                  });
+            }
+            else if(index == 2){
+              _scaffoldKey.currentState?.openDrawer();
+              setState(() {
+                navigationBarIndex = 0;
+              });
+            }
+          },
+          selectedIndex: navigationBarIndex,
+          indicatorColor: Colors.white,
+          backgroundColor: Colors.black,
+          destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home, color: Colors.white),
+            selectedIcon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.add_circle, color: Colors.white),
+            selectedIcon: Icon(Icons.add_circle_outline),
+            label: 'Profile',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings, color: Colors.white),
+            selectedIcon: Icon(Icons.settings_outlined),
+            label: 'Notifications',
+          ),
+        ],
+        ),
+      ),
       drawer: Drawer(
         backgroundColor: Colors.black,
         child: ListView(
@@ -169,168 +347,29 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.white,
-          child: const Icon(Icons.add),
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
-                ),
-                backgroundColor: Colors.black,
-                isScrollControlled: true,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.all(32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                icon: const Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 30,
-                                )),
-                            ElevatedButton(
-                                onPressed: () {
-                                  // First, check if the form is valid
-                                  if (_formKey.currentState?.validate() ??
-                                      false) {
-                                    // If the form is valid, proceed to attempt post creation
-                                    try {
-                                      createPost(titleController.text,
-                                              contentController.text)
-                                          .then((_) {
-                                        // Assuming createPost function is correct and post is created successfully
-                                        if (mounted) {
-                                          Navigator.pop(
-                                              context); // Close the modal
-                                        }
-                                        setState(() {
-                                          titleController
-                                              .clear(); // Clear the text fields
-                                          contentController.clear();
-                                          post =
-                                              fetchPosts(); // Refresh the list of posts
-                                        });
-                                      }).catchError((error) {
-                                        // Handle any errors that occur during post creation
-                                        print('Error creating post: $error');
-                                      });
-                                    } catch (error) {
-                                      // Handle any errors here
-                                      print('Error: $error');
-                                    }
-                                  } else {
-                                    // If the form is not valid, show an error dialog or handle it accordingly
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: const Text('Error'),
-                                            content: const Text(
-                                                'Please enter a title and content'),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: const Text('Close'),
-                                              ),
-                                            ],
-                                          );
-                                        });
-                                  }
-                                },
-                                child: const Text("Post",
-                                    style: TextStyle(color: Colors.black))),
-                          ],
-                        ),
-                        Form(
-                            key: _formKey,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  controller: titleController,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter some text';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(color: Colors.white),
-                                  decoration: const InputDecoration(
-                                      hintText: 'Title',
-                                      hintStyle:
-                                          TextStyle(color: Colors.white)),
-                                ),
-                                TextFormField(
-                                  controller: contentController,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter some text';
-                                    }
-                                    return null;
-                                  },
-                                  style: const TextStyle(color: Colors.white),
-                                  maxLines: 20,
-                                  decoration: const InputDecoration(
-                                      hintText:
-                                          'What\'s on your mind?...',
-                                      hintStyle:
-                                          TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            )),
-                      ],
-                    ),
-                  );
-                });
-          }),
       appBar: AppBar(
+        leading: Container(),
         backgroundColor: Colors.black,
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(15),
+          preferredSize: const Size.fromHeight(1),
           child: Column(children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 16),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      highlightColor: Colors.transparent,
-                      splashColor: Colors.transparent,
-                      onTap: () {
-                        _scrollController.animateTo(0,
-                            duration: const Duration(seconds: 1),
-                            curve: Curves.easeIn);
-                      },
-                      child: const ImageIcon(
-                          AssetImage("assets/icons/shade.png"),
-                          color: Colors.white,
-                          size: 30),
-                    ),
-                  ),
-                ),
-                Builder( builder: (context) => IconButton(
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                    icon: const Icon(Icons.settings,
-                        color: Colors.white, size: 30))),
+                InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  onTap: () {
+                    _scrollController.animateTo(0,
+                        duration: const Duration(seconds: 1),
+                        curve: Curves.easeIn);
+                  },
+                  child: const ImageIcon(
+                      AssetImage("assets/icons/shade.png"),
+                      color: Colors.white,
+                      size: 40),
+                )
               ],
             ),
             Container(
