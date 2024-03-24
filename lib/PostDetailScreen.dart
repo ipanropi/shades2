@@ -240,6 +240,9 @@ class _PostDetailState extends State<PostDetail> {
                     child: Form(
                       key: _formKey,
                       child: TextFormField(
+			onTapOutside: (event) {
+				FocusManager.instance.primaryFocus?.unfocus();
+			},
                         controller: commentController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
