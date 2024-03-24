@@ -201,9 +201,10 @@ class _PostDetailState extends State<PostDetail> {
                             ],
                           ),
                           onTap: () {
+			    final box = context.findRenderObject() as RenderBox?;
                             // Share the post
                             Share.share(
-                                'Check out this post on UWOffMyChest: https://uwoffmychest.com/post/${post.post_id}', subject: post.title);
+                                'Check out this post on UWOffMyChest: https://uwoffmychest.com/post/${post.post_id}', subject: post.title, sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size);
                           },
                         ),
                       ],
