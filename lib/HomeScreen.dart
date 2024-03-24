@@ -145,7 +145,7 @@ class _HomeState extends State<Home> {
                     return Container(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      padding: const EdgeInsets.fromLTRB(16, 32, 16, 16),
+                      padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
